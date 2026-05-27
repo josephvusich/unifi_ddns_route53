@@ -1,6 +1,11 @@
+locals {
+  safe_domain_name = replace(var.domain_name, "/[^a-zA-Z0-9_-]/", "_")
+}
+
+
 resource "aws_lambda_function" "ddns" {
   filename      = "${path.module}/placeholder.zip"
-  function_name = "ddns"
+  function_name = "ddns-${local.safe_domain_name}"
   role          = aws_iam_role.ddns.arn
   handler       = "lambda.handler"
   runtime       = "python3.12"
