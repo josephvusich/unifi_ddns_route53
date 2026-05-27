@@ -32,17 +32,20 @@ The only three inputs needed are:
 | domain_name    | the name of the DNS entry in that zone that will point to the API gateway receiving updates  |
 | acm_arn        | the ARN of an ACM record that validates the DNS for `domain_name`                            |
 
-Once the terraform is run, you will need to change the value of the ssm
-parameter and update the lambdas source code. To do this, follow these steps:
+The Lambda code in `lambda/lambda.py` is packaged and uploaded by Terraform
+itself, so subsequent edits to that file are picked up on the next
+`terraform apply`.
 
-1. run
-   `aws ssm put-parameter --name "/unifi_ddns_route53_credentials" --value "USERNAME:PASSWORD" --type SecureString --overwrite`.
-   This assumes your AWS permissions are set up properly for CLI use. Change the
-   `USERNAME:PASSWORD` to values you want to use for authenticating this API.
-   These will be used lated in the unifi setup.
-2. run
-   `cd lambda; zip function.zip lambda.py; aws lambda update-function-code --zip-file fileb://function.zip --function-name ddns`.
-   This will place the code in the lambda and deploy it.
+Once the terraform is run, you will need to set the value of the SSM
+parameter that holds the API credentials:
+
+```
+aws ssm put-parameter --name "/unifi_ddns_route53_credentials" --value "USERNAME:PASSWORD" --type SecureString --overwrite
+```
+
+This assumes your AWS permissions are set up properly for CLI use. Change the
+`USERNAME:PASSWORD` to values you want to use for authenticating this API.
+These will be used later in the unifi setup.
 
 ## UniFi Setup
 
